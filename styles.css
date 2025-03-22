@@ -2584,6 +2584,11 @@ tr.tr-animate {
     right: 20px;
     z-index: 1000;
     text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+    transform: scale(1.05);
 }
 
 .logo {
@@ -2591,6 +2596,29 @@ tr.tr-animate {
     height: auto;
     display: block;
     margin-bottom: 5px;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+}
+
+.animated-logo {
+    animation: pulse 2s infinite ease-in-out, glow 3s infinite alternate;
+    transition: all 0.3s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { filter: drop-shadow(0 0 5px rgba(100, 149, 237, 0.5)); }
+    100% { filter: drop-shadow(0 0 15px rgba(100, 149, 237, 0.8)); }
+}
+
+.logo-container:hover .animated-logo {
+    animation-play-state: paused;
+    transform: rotate(5deg) scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(100, 149, 237, 0.9));
 }
 
 .author {
@@ -2598,4 +2626,11 @@ tr.tr-animate {
     font-size: 14px;
     color: #333;
     font-weight: bold;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.logo-container:hover .author {
+    opacity: 1;
+    transform: translateY(2px);
 }
