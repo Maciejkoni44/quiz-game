@@ -2596,7 +2596,7 @@ tr.tr-animate {
     height: auto;
     display: block;
     margin-bottom: 5px;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+    filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }
 
 .animated-logo {
@@ -2611,22 +2611,22 @@ tr.tr-animate {
 }
 
 @keyframes glow {
-    0% { filter: drop-shadow(0 0 5px rgba(100, 149, 237, 0.5)); }
-    100% { filter: drop-shadow(0 0 15px rgba(100, 149, 237, 0.8)); }
+    0% { filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); }
+    100% { filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)); }
 }
 
 .logo-container:hover .animated-logo {
     animation-play-state: paused;
     transform: rotate(5deg) scale(1.1);
-    filter: drop-shadow(0 0 15px rgba(100, 149, 237, 0.9));
+    filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
 }
 
 .author {
     margin: 0;
-    font-size: 14px;
-    color: #333;
+    font-size: 18px;
+    color: white;
     font-weight: bold;
-    opacity: 0.8;
+    opacity: 0.9;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
