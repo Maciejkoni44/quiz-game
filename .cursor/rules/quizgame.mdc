@@ -1,0 +1,284 @@
+---
+description: Chce stworzyc strone internetowa w ktorej som Quizy o ruznych grach komputerowych. Moja technologia to Django, html, css, javascript. Prosze napisz ogulny plik z zasadami pisania kodu w tej technologi dla AI ktore bedzie tworzyc strone. Prosze napisz dokladna, krok po kroku dokumentacje aplikacji z uwzglednieniem struktury i plikow, zgodnie z SOLID i modularna
+globs: 
+alwaysApply: false
+---
+1. Struktura Projektu
+Projekt zostanie zorganizowany zgodnie z najlepszymi praktykami Django i zasadami SOLID. Poniżej przedstawiam proponowaną strukturę folderów i plików.
+
+csharp
+Copy code
+my_game_quizzes/
+├── manage.py
+├── my_game_quizzes/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── quiz/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── forms.py
+│   ├── migrations/
+│   ├── templates/
+│   │   ├── quiz/
+│   │   │   ├── index.html
+│   │   │   ├── quiz_detail.html
+│   │   │   └── result.html
+│   └── static/
+│       ├── css/
+│       │   ├── style.css
+│       ├── js/
+│       │   ├── quiz.js
+├── templates/
+│   └── base.html
+├── static/
+│   ├── css/
+│   ├── js/
+├── requirements.txt
+└── README.md
+2. Zasady SOLID i Modularność w Projekcie
+S - Single Responsibility Principle (SRP)
+Każdy plik i klasa powinna mieć jedną odpowiedzialność. W kontekście aplikacji quizowej:
+
+Model będzie odpowiedzialny tylko za reprezentowanie danych (np. pytania, odpowiedzi, wyniki quizów).
+Widoki będą tylko obsługiwać logikę interakcji użytkownika, w tym renderowanie odpowiednich szablonów.
+Formularze będą odpowiedzialne za walidację danych przesyłanych przez użytkownika.
+O - Open/Closed Principle (OCP)
+Kod aplikacji będzie otwarty na rozszerzenia, ale zamknięty na modyfikacje. Na przykład, jeśli dodasz nowy typ quizu, będziesz mógł dodać go w nowym pliku lub klasie bez zmieniania istniejącego kodu.
+
+L - Liskov Substitution Principle (LSP)
+Zapewnimy, że wszystkie klasy dziedziczące będą poprawnie działać, niezależnie od tego, czy są używane w miejscu ich bazowej klasy. Na przykład, jeśli rozszerzymy klasy formularzy lub widoków, nie będą one łamały zasad funkcjonowania aplikacji.
+
+I - Interface Segregation Principle (ISP)
+Podzielimy interfejsy na mniejsze, bardziej wyspecjalizowane części, które będą używane tylko przez odpowiednie klasy. W aplikacji może to oznaczać, że formularze, modele, widoki będą miały precyzyjnie określone metody do używania.
+
+D - Dependency Inversion Principle (DIP)
+Będziemy unikać bezpośrednich zależności między klasami o wyższym poziomie a klasami o niższym poziomie. Na przykład, modele będą abstrahować logikę dostępu do bazy danych w sposób, który ułatwia późniejsze testowanie.
+
+3. Opis Struktury Aplikacji
+3.1. settings.py
+Konfiguracja aplikacji Django, w tym baza danych, aplikacje zainstalowane, middleware, itp.
+Zawiera również ustawienia dla statycznych plików i szablonów.
+3.2. urls.py
+Główne mapowanie URL, które prowadzi do odpowiednich widoków.
+Będzie zawierało ścieżki do różnych stron aplikacji (np. strona główna, quizy, wyniki).
+3.3. Aplikacja quiz
+Aplikacja odpowiedzialna za logikę quizów, modele danych, formularze, widoki i szablony.
+
+3.3.1. Modele (models.py)
+Modele Django będą reprezentować dane w bazie:
+
+python
+Copy code
+from django.db import models
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.text
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
+3.3.2. Formularze (forms.py)
+Formularze obsługujące dane wejściowe od użytkowników:
+
+python
+Copy code
+from django import forms
+from .models import Answer
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['text', 'is_correct']
+3.3.3. Widoki (views.py)
+Widoki będą obsługiwać logikę interakcji z użytkownikiem:
+
+python
+Copy code
+from django.shortcuts import render, get_object_or_404
+from .models import Quiz, Question
+from .forms import AnswerForm
+
+def quiz_list(request):
+    quizzes = Quiz.objects.all()
+    return render(request, 'quiz/index.html', {'quizzes': quizzes})
+
+def quiz_detail(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = quiz.questions.all()
+    return render(request, 'quiz/quiz_detail.html', {'quiz': quiz, 'questions': questions})
+3.3.4. Szablony (templates/quiz/)
+Szablony będą wyświetlały zawartość na stronie. Na przykład, dla strony głównej:
+
+html
+Copy code
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Quizy o Graach Komputerowych</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Witaj w Quizach o Graach Komputerowych!</h1>
+    <ul>
+        {% for quiz in quizzes %}
+        <li><a href="{% url 'quiz_detail' quiz.id %}">{{ quiz.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+3.4. Statyczne Pliki (static/)
+Pliki CSS i JavaScript będą odpowiedzialne za stylizowanie aplikacji oraz interakcje na stronie:
+
+style.css — Arkusz stylów.
+quiz.js — Skrypt JavaScript obsługujący logikę quizów, na przykład przesyłanie odpowiedzi przez AJAX.
+3.5. Testy (tests.py)
+Będziemy pisać testy jednostkowe, aby zapewnić, że aplikacja działa poprawnie. Na przykład testowanie widoków:
+
+python
+Copy code
+from django.test import TestCase
+from .models import Quiz
+
+class QuizModelTest(TestCase):
+    def test_quiz_creation(self):
+        quiz = Quiz.objects.create(title="Test Quiz", description="Opis quizu")
+        self.assertEqual(quiz.title, "Test Quiz")
+4. Wskazówki Dotyczące Programowania
+Zgodność z SOLID:
+
+Twórz klasy, które mają jedno zadanie. Na przykład, widok quiz_list nie powinien zawierać logiki związanej z obróbką danych – ta logika powinna znajdować się w modelach lub w osobnych klasach.
+Modularność:
+
+Kod w Django jest już w dużej mierze modularny, ale warto tworzyć oddzielne pliki dla logicznych komponentów (np. models.py, views.py, forms.py).
+Refaktoryzacja:
+
+Staraj się refaktoryzować kod w miarę rozwoju projektu, aby uniknąć zbytniego zagnieżdżania kodu w jednym pliku.
+Testowanie:
+
+Pisz testy dla każdej funkcji i upewnij się, że aplikacja działa zgodnie z oczekiwaniami przed wdrożeniem.
+To ogólny plan tworzenia aplikacji, który uwzględnia zasady SOLID, modularność i dobrą strukturę. Każdy element w projekcie będzie odpowiedzialny za jedną część funkcjonalności, co ułatwi rozbudowę aplikacji i jej późniejsze utrzymanie.
+
+
+You said:
+nie pisz kodu tylko sama architektrure i zasady 
+ChatGPT said:
+Rozumiem, chcesz skupić się na samej architekturze aplikacji oraz zasadach jej tworzenia, a nie na implementacji kodu. Oto szczegółowa dokumentacja, uwzględniająca zasady SOLID, modularność i strukturę plików bez kodu:
+
+Dokumentacja Architektury Aplikacji: Quizy o Graach Komputerowych
+1. Cel aplikacji
+Aplikacja ma na celu umożliwienie użytkownikom rozwiązywania quizów związanych z grami komputerowymi. Użytkownicy będą mogli:
+
+Wybierać quizy dotyczące różnych gier.
+Rozwiązywać pytania i sprawdzać swoje wyniki.
+Przeglądać szczegóły dotyczące gier, z którymi związane są quizy.
+2. Zasady projektowania (SOLID i Modularność)
+S - Single Responsibility Principle (SRP)
+Każdy komponent aplikacji (moduł, klasa, funkcja) powinien mieć jedną odpowiedzialność, tzn. wykonywać tylko jedną, dobrze zdefiniowaną funkcję.
+
+Modele będą odpowiadały tylko za dane, ich przechowywanie i walidację w bazie danych.
+Widoki będą odpowiedzialne tylko za obsługę logiki interakcji z użytkownikiem i renderowanie odpowiednich szablonów.
+Formularze będą miały na celu tylko walidację danych wejściowych.
+Szablony będą zawierały tylko kod HTML i logikę wyświetlania danych.
+Statyczne pliki (CSS, JS) będą tylko odpowiedzialne za stylizację i interaktywność strony.
+O - Open/Closed Principle (OCP)
+Kod powinien być otwarty na rozszerzenia, ale zamknięty na modyfikacje. Aby to osiągnąć:
+
+Nowe funkcjonalności (np. nowe typy quizów, nowe pytania) będą dodawane poprzez rozbudowę istniejących struktur, a nie przez modyfikowanie istniejącego kodu.
+Aplikacja powinna być zaprojektowana w sposób umożliwiający łatwe rozszerzanie, np. dodawanie nowych kategorii quizów lub integrację z zewnętrznymi serwisami (np. API gier).
+L - Liskov Substitution Principle (LSP)
+Obiekty klas dziedziczących powinny być wymienne z obiektami klas bazowych. W kontekście tej aplikacji:
+
+Jeśli będzie istniała potrzeba dziedziczenia, np. różne typy pytań (tekstowe, wyboru), to klasy dziedziczące powinny być używane w miejsce klasy bazowej bez zmiany działania aplikacji.
+I - Interface Segregation Principle (ISP)
+Interfejsy (np. formularze, widoki, modele) powinny być podzielone na mniejsze, bardziej wyspecjalizowane.
+
+Formularze do walidacji odpowiedzi nie będą zawierały logiki związanej z wyświetlaniem wyników.
+Widoki będą oddzielne dla wyświetlania listy quizów, szczegółów quizu i wyników.
+Logika związana z wyświetlaniem wyników i obliczaniem punktów będzie w oddzielnym module, a nie w widokach.
+D - Dependency Inversion Principle (DIP)
+Zasada ta mówi, że komponenty wysokopoziomowe (np. widoki) nie powinny bezpośrednio zależeć od komponentów niskopoziomowych (np. modeli bazy danych), ale od abstrakcji.
+
+Logika dostępu do danych (np. zapytania do bazy) powinna być oddzielona w odpowiednich warstwach. Widoki i formularze nie powinny bezpośrednio wykonywać zapytań do bazy danych, lecz powinny korzystać z abstrakcji (np. serwisów).
+3. Struktura aplikacji
+3.1. Foldery i pliki główne
+Aplikacja Django jest podzielona na kilka głównych folderów, co pozwala na łatwe zarządzanie różnymi komponentami systemu.
+
+Struktura katalogów aplikacji:
+
+csharp
+Copy code
+my_game_quizzes/
+├── manage.py
+├── my_game_quizzes/  # Główna konfiguracja Django (settings.py, urls.py)
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── quiz/  # Aplikacja odpowiedzialna za quizy
+│   ├── models.py  # Modele danych
+│   ├── views.py   # Widoki obsługujące interakcję z użytkownikiem
+│   ├── forms.py   # Formularze do walidacji danych
+│   ├── urls.py    # Mapowanie URL dla quizów
+│   ├── templates/ # Szablony HTML
+│   │   ├── quiz/
+│   └── static/    # Pliki statyczne (CSS, JS)
+├── templates/  # Główne szablony
+│   └── base.html  # Szablon bazowy dla aplikacji
+├── static/  # Główne pliki statyczne
+├── requirements.txt  # Lista zależności aplikacji
+└── README.md  # Dokumentacja
+3.2. Podział na aplikacje Django
+quiz: To główna aplikacja, która obsługuje quizy. W niej znajdują się modele, widoki, formularze, szablony, a także logika związana z przetwarzaniem odpowiedzi i wyników.
+my_game_quizzes: Główna konfiguracja projektu Django. Zawiera pliki takie jak settings.py, urls.py oraz inne ustawienia globalne.
+3.3. Modele (models.py)
+Modele reprezentują dane przechowywane w bazie danych. Każdy model powinien być odpowiedzialny za jedną rzecz:
+
+Quiz: Reprezentuje quiz, zawiera tytuł, opis itp.
+Pytanie: Reprezentuje pojedyncze pytanie w quizie.
+Odpowiedź: Reprezentuje odpowiedzi do pytań, w tym informacje o tym, która odpowiedź jest poprawna.
+Modele będą dobrze zdefiniowane i zorganizowane, aby ułatwić przyszłe zmiany, jak np. dodanie nowych typów pytań.
+
+3.4. Widoki (views.py)
+Widoki będą odpowiadały za prezentowanie stron użytkownikowi. Każdy widok będzie odpowiedzialny za jedną funkcję:
+
+Wyświetlanie listy quizów.
+Wyświetlanie szczegółów quizu.
+Obliczanie wyników quizu. Widoki będą wykorzystywały klasy widoków Django (np. ListView, DetailView), co pozwala na łatwiejsze zarządzanie logiką prezentacji.
+3.5. Formularze (forms.py)
+Formularze będą obsługiwały dane wejściowe od użytkowników, np. wybór odpowiedzi na pytanie. Każdy formularz będzie odpowiedzialny tylko za walidację danych wejściowych związanych z określoną funkcjonalnością.
+
+3.6. Szablony (templates)
+Szablony będą rozdzielone według funkcjonalności. Główne szablony aplikacji (np. base.html) będą zawierały strukturę strony, nagłówek, stopkę, a także ładowanie zasobów statycznych (CSS, JS). Specyficzne szablony quizów (np. quiz_detail.html) będą renderować dane związane z konkretnym quizem.
+
+3.7. Pliki statyczne (static)
+Pliki CSS i JS będą zorganizowane w osobnych folderach:
+
+CSS: Pliki odpowiedzialne za stylizację strony, takie jak style.css.
+JS: Pliki odpowiedzialne za logikę interaktywną na stronie, jak obsługa odpowiedzi na pytania przez AJAX, dynamiczne ładowanie wyników.
+4. Zasady dotyczące testowania i rozwoju aplikacji
+Testowanie: Powinno obejmować testy jednostkowe dla modeli, formularzy i widoków. Testy sprawdzą, czy aplikacja działa zgodnie z wymaganiami i czy wprowadzane zmiany nie łamią istniejącej funkcjonalności.
+Refaktoryzacja: Regularnie refaktoryzuj kod, aby utrzymać jego wysoką jakość. Używaj narzędzi takich jak flake8 i black, aby utrzymać jednolitą stylistykę kodu.
+Dokumentacja: Każdy komponent (model, widok, formularz) powinien być odpowiednio udokumentowany, aby ułatwić zrozumienie struktury aplikacji.

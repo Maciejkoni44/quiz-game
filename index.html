@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz o Grach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <header>
+                <h1>Quiz o Popularnych Grach</h1>
+                <div class="stats">
+                    <span class="coins">Monety: <span id="coinCount">0</span>/10</span>
+                    <span class="quiz-set">Zestaw: <span id="quizSet">1</span></span>
+                </div>
+                
+                <!-- Dodaję kontener na ulepszacze -->
+                <div class="powerups-container">
+                    <h3>Ulepszacze <span id="powerup-counter">0/5</span></h3>
+                    <div class="powerups">
+                        <div class="powerup" id="double-points" title="Podwójne punkty za następne pytanie">
+                            <span class="powerup-icon">×2</span>
+                            <span class="powerup-count">0</span>
+                        </div>
+                        <div class="powerup" id="double-time" title="Podwójny czas na odpowiedź">
+                            <span class="powerup-icon">⏱</span>
+                            <span class="powerup-count">0</span>
+                        </div>
+                        <div class="powerup" id="remove-answers" title="Usuń połowę niepoprawnych odpowiedzi">
+                            <span class="powerup-icon">½</span>
+                            <span class="powerup-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="quiz-container">
+                <div id="welcome-screen" class="screen active">
+                    <h2>Witaj w Quizie o Grach!</h2>
+                    <p>Odpowiadaj na pytania o popularnych grach. Za każdą poprawną odpowiedź otrzymasz 1 monetę. Zbierz 10 monet, aby przejść do następnego zestawu!</p>
+                    <div class="player-name-container">
+                        <label for="player-name">Podaj swoją nazwę:</label>
+                        <input type="text" id="player-name" placeholder="Wpisz swoją nazwę..." />
+                    </div>
+                    
+                    <div class="difficulty-selection">
+                        <h3>Wybierz poziom trudności:</h3>
+                        <div class="difficulty-buttons">
+                            <button id="easy-btn" class="difficulty-btn selected" data-difficulty="0">ŁATWE</button>
+                            <button id="medium-btn" class="difficulty-btn" data-difficulty="1">TRUDNE</button>
+                            <button id="hard-btn" class="difficulty-btn" data-difficulty="2">STRASZNIE TRUDNE</button>
+                        </div>
+                    </div>
+                    
+                    <button id="start-btn" class="btn">Rozpocznij Quiz</button>
+                    <button id="tutorial-btn" class="btn tutorial-btn">Jak grać? - Tutorial</button>
+                    <button id="daily-quests-btn" class="btn daily-btn">Zadania Dzienne</button>
+                    <button id="speed-mode-btn" class="btn speed-btn">SZYBCIOR <span class="speed-badge">NEW!</span></button>
+                </div>
+
+                <!-- Ekran zadań dziennych -->
+                <div id="daily-quests-screen" class="screen">
+                    <h2>Zadania Dzienne</h2>
+                    <p>Wykonaj 3 krótkie quizy, aby otrzymać specjalną nagrodę!</p>
+                    
+                    <div class="daily-quests-container">
+                        <div class="daily-quest" id="daily-quest-1">
+                            <div class="quest-header">
+                                <h3>Quiz 1</h3>
+                                <span class="quest-status">0/3</span>
+                            </div>
+                            <p class="quest-description">Odpowiedz na 3 pytania o Minecraft</p>
+                            <div class="quest-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <button class="btn quest-btn" data-quest="1">Rozpocznij</button>
+                        </div>
+                        
+                        <div class="daily-quest" id="daily-quest-2">
+                            <div class="quest-header">
+                                <h3>Quiz 2</h3>
+                                <span class="quest-status">0/3</span>
+                            </div>
+                            <p class="quest-description">Odpowiedz na 3 pytania o Fortnite</p>
+                            <div class="quest-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <button class="btn quest-btn" data-quest="2">Rozpocznij</button>
+                        </div>
+                        
+                        <div class="daily-quest" id="daily-quest-3">
+                            <div class="quest-header">
+                                <h3>Quiz 3</h3>
+                                <span class="quest-status">0/3</span>
+                            </div>
+                            <p class="quest-description">Odpowiedz na 3 pytania o CS:GO</p>
+                            <div class="quest-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <button class="btn quest-btn" data-quest="3">Rozpocznij</button>
+                        </div>
+                    </div>
+                    
+                    <div class="daily-rewards">
+                        <h3>Nagroda za ukończenie wszystkich zadań:</h3>
+                        <div class="reward-display">
+                            <div class="reward-icon">🏆</div>
+                            <p>+5 punktów do wyniku</p>
+                        </div>
+                        <button id="claim-daily-reward-btn" class="btn reward-btn" disabled>Odbierz nagrodę</button>
+                    </div>
+                    
+                    <button id="back-to-welcome-btn" class="btn back-btn">Wróć do menu</button>
+                </div>
+                
+                <!-- Ekran ukończenia zadania dziennego -->
+                <div id="daily-quest-complete-screen" class="screen">
+                    <h2>Zadanie Ukończone!</h2>
+                    <div class="completion-icon">✅</div>
+                    <p>Gratulacje! Ukończyłeś zadanie dzienne.</p>
+                    <p class="completion-stats">Poprawne odpowiedzi: <span id="correct-answers-count">0</span>/3</p>
+                    <button id="back-to-quests-btn" class="btn">Wróć do listy zadań</button>
+                </div>
+
+                <!-- Ekran dla trybu SZYBCIOR -->
+                <div id="speed-mode-screen" class="screen">
+                    <!-- Efekt szybkości -->
+                    <div class="speed-effect-container">
+                        <!-- Dynamiczne linie prędkości -->
+                        <div class="speed-lines-container">
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                            <div class="speed-line"></div>
+                        </div>
+                        
+                        <!-- Efekt rozmycia na krawędziach -->
+                        <div class="speed-blur top"></div>
+                        <div class="speed-blur right"></div>
+                        <div class="speed-blur bottom"></div>
+                        <div class="speed-blur left"></div>
+                        
+                        <!-- Pulsujący efekt prędkości -->
+                        <div class="speed-pulse"></div>
+                    </div>
+                    
+                    <div class="speed-title">SZYBCIOR</div>
+                    <div class="speed-mode-container">
+                        <div class="speed-question-number">
+                            Pytanie <span id="current-speed-question">1</span>/25
+                        </div>
+                        <div class="timer-container">
+                            <div class="timer-circle speed-timer">
+                                <div id="speed-timer-bar" class="timer-bar"></div>
+                                <span id="speed-timer-count">10</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="speed-question" class="question-text">Tutaj pojawi się pytanie</div>
+                    <div id="speed-answers" class="answers-container">
+                        <!-- Answers will be generated here -->
+                    </div>
+                </div>
+                
+                <!-- Ekran wyniku trybu SZYBCIOR -->
+                <div id="speed-result-screen" class="screen">
+                    <h2 class="speed-title">WYNIK TRYBU SZYBCIOR</h2>
+                    <div class="speed-result-icon">🏆</div>
+                    <div class="speed-results">
+                        <div class="result-item">
+                            <span class="result-label">Poprawne odpowiedzi:</span>
+                            <span id="speed-correct-count" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Zdobyte punkty:</span>
+                            <span id="speed-points" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Średni czas odpowiedzi:</span>
+                            <span id="speed-avg-time" class="result-value">0s</span>
+                        </div>
+                    </div>
+                    <div class="speed-share">
+                        <p>Pochwal się swoim wynikiem!</p>
+                        <button id="speed-restart-btn" class="btn">Zagraj jeszcze raz</button>
+                        <button id="speed-home-btn" class="btn">Wróć do menu</button>
+                    </div>
+                </div>
+                
+                <!-- Ekran tutoriala -->
+                <div id="tutorial-screen" class="screen">
+                    <h2>Jak grać w Quiz o Grach</h2>
+                    <div class="tutorial-container">
+                        <div class="tutorial-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="step-counter">Krok <span id="current-step">1</span> z <span id="total-steps">7</span></div>
+                        </div>
+                        
+                        <div class="tutorial-slides">
+                            <!-- Krok 1 -->
+                            <div class="tutorial-slide active" id="slide-1">
+                                <h3>Rozpoczęcie gry</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-welcome-screen"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Na ekranie powitalnym wpisz swoją nazwę i wybierz poziom trudności.</p>
+                                        <ul>
+                                            <li><strong>Łatwy:</strong> 60 sekund na odpowiedź</li>
+                                            <li><strong>Trudny:</strong> 40 sekund na odpowiedź</li>
+                                            <li><strong>Strasznie trudny:</strong> 20 sekund na odpowiedź</li>
+                                        </ul>
+                                        <p>Im wyższy poziom trudności, tym więcej punktów za poprawną odpowiedź!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 2 -->
+                            <div class="tutorial-slide" id="slide-2">
+                                <h3>Pytania i odpowiedzi</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-question-screen"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>W quizie znajdziesz dwa rodzaje pytań:</p>
+                                        <ul>
+                                            <li><strong>Wielokrotnego wyboru:</strong> Wybierz jedną z czterech odpowiedzi</li>
+                                            <li><strong>Z własną odpowiedzią:</strong> Wpisz odpowiedź w pole tekstowe</li>
+                                        </ul>
+                                        <p>Na udzielenie odpowiedzi masz ograniczony czas (zależny od poziomu trudności).</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 3 -->
+                            <div class="tutorial-slide" id="slide-3">
+                                <h3>Timer i punktacja</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-timer"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Timer wskazuje pozostały czas na odpowiedź:</p>
+                                        <ul>
+                                            <li><strong>Zielony (Łatwy):</strong> 60 sekund</li>
+                                            <li><strong>Pomarańczowy (Trudny):</strong> 40 sekund</li>
+                                            <li><strong>Czerwony (Strasznie trudny):</strong> 20 sekund</li>
+                                        </ul>
+                                        <p>Za każdą poprawną odpowiedź zdobywasz:</p>
+                                        <ul>
+                                            <li>1 monetę</li>
+                                            <li>Punkty zależnie od poziomu trudności (1-3)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 4 -->
+                            <div class="tutorial-slide" id="slide-4">
+                                <h3>Ulepszacze</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-powerups"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Po 5 poprawnych odpowiedziach pod rząd otrzymasz losowy ulepszacz:</p>
+                                        <ul>
+                                            <li><strong>Podwójne punkty (×2):</strong> Daje podwójne punkty za jedno pytanie</li>
+                                            <li><strong>Podwójny czas (⏱):</strong> Podwaja czas na odpowiedź</li>
+                                            <li><strong>Eliminacja odpowiedzi (½):</strong> Usuwa połowę niepoprawnych odpowiedzi</li>
+                                        </ul>
+                                        <p>Kliknij ikonę ulepszacza w trakcie odpowiadania na pytanie, aby go aktywować.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Nowy krok - Jak zdobywać i używać ulepszaczy -->
+                            <div class="tutorial-slide" id="slide-5">
+                                <h3>Jak zdobywać i używać ulepszaczy</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-powerup-usage"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p><strong>Zdobywanie ulepszaczy:</strong></p>
+                                        <ul>
+                                            <li>Odpowiedz poprawnie na 5 pytań z rzędu</li>
+                                            <li>Pojawi się ekran z informacją o zdobyciu ulepszacza</li>
+                                            <li>Liczba ulepszaczy jest widoczna obok ich ikon na górze ekranu</li>
+                                        </ul>
+                                        <p><strong>Używanie ulepszaczy:</strong></p>
+                                        <ul>
+                                            <li>W trakcie pytania naciśnij przycisk z ikoną ulepszacza, który chcesz wykorzystać</li>
+                                            <li><strong>×2</strong> - Aktywuj przed odpowiedzią, aby zdobyć podwójne punkty</li>
+                                            <li><strong>⏱</strong> - Użyj, gdy potrzebujesz więcej czasu na odpowiedź</li>
+                                            <li><strong>½</strong> - Pomocny przy trudnych pytaniach wielokrotnego wyboru</li>
+                                        </ul>
+                                        <p>Używaj ulepszaczy strategicznie, aby maksymalizować swój wynik!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 5 (teraz 6) -->
+                            <div class="tutorial-slide" id="slide-6">
+                                <h3>Zestawy pytań</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-completion"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Quiz składa się z 3 zestawów pytań o rosnącym poziomie trudności.</p>
+                                        <p>Aby przejść do następnego zestawu, musisz zdobyć 10 monet (udzielić 10 poprawnych odpowiedzi).</p>
+                                        <p>Po ukończeniu wszystkich zestawów zobaczysz swój końcowy wynik i będziesz mógł zagrać ponownie.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 6 (teraz 7) -->
+                            <div class="tutorial-slide" id="slide-7">
+                                <h3>Tabela wyników</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-scoreboard"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Po prawej stronie zobaczysz tabelę wyników, która pokazuje:</p>
+                                        <ul>
+                                            <li>Twoje aktualne statystyki</li>
+                                            <li>Najlepsze wyniki z wszystkich czasów</li>
+                                            <li>Najlepsze wyniki z ostatniego tygodnia</li>
+                                        </ul>
+                                        <p>Możesz również pobrać wyniki w formacie JSON za pomocą przycisku "Pobierz wyniki".</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Krok 7 (teraz 8) -->
+                            <div class="tutorial-slide" id="slide-8">
+                                <h3>Gotowy do gry?</h3>
+                                <div class="tutorial-content">
+                                    <div class="tutorial-image">
+                                        <div class="mock-ready"></div>
+                                    </div>
+                                    <div class="tutorial-text">
+                                        <p>Teraz wiesz już wszystko, co potrzebne, aby rozpocząć grę w Quiz o Grach!</p>
+                                        <p>Pokaż swoją wiedzę o grach, zdobywaj punkty i baw się dobrze!</p>
+                                        <p>Powodzenia!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-navigation">
+                            <button id="prev-step" class="btn nav-btn" disabled>Poprzedni krok</button>
+                            <button id="next-step" class="btn nav-btn">Następny krok</button>
+                            <button id="finish-tutorial" class="btn" style="display: none;">Zakończ tutorial</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="question-screen" class="screen">
+                    <h2 id="game-category">Kategoria: <span></span></h2>
+                    
+                    <!-- Timer -->
+                    <div class="timer-container">
+                        <div class="timer-circle">
+                            <div id="timer-bar" class="timer-bar"></div>
+                            <span id="timer-count">60</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dodaję przyciski aktywacji ulepszaczy -->
+                    <div class="active-powerups">
+                        <button id="use-double-points" class="powerup-btn" title="Podwójne punkty za to pytanie" disabled>
+                            <span class="powerup-icon">×2</span>
+                        </button>
+                        <button id="use-double-time" class="powerup-btn" title="Podwójny czas na odpowiedź" disabled>
+                            <span class="powerup-icon">⏱</span>
+                        </button>
+                        <button id="use-remove-answers" class="powerup-btn" title="Usuń połowę niepoprawnych odpowiedzi" disabled>
+                            <span class="powerup-icon">½</span>
+                        </button>
+                    </div>
+                    
+                    <div id="question">Tutaj pojawi się pytanie</div>
+                    <div id="answers" class="answers-container">
+                        <!-- Answers will be generated here -->
+                    </div>
+                    <div id="text-answer-container" class="text-answer-container">
+                        <input type="text" id="text-answer-input" placeholder="Wpisz swoją odpowiedź..." />
+                        <button id="submit-text-answer" class="btn">Sprawdź</button>
+                    </div>
+                </div>
+
+                <div id="feedback-screen" class="screen">
+                    <h2 id="feedback-text">Odpowiedź</h2>
+                    <p id="feedback-info"></p>
+                    <button id="next-btn" class="btn">Następne Pytanie</button>
+                </div>
+
+                <div id="completion-screen" class="screen">
+                    <h2>Gratulacje!</h2>
+                    <p>Uzbierałeś 10 monet i ukończyłeś zestaw pytań!</p>
+                    <button id="next-set-btn" class="btn">Przejdź do następnego zestawu</button>
+                </div>
+
+                <!-- Ekran otrzymania ulepszacza -->
+                <div id="powerup-screen" class="screen">
+                    <h2>Gratulacje!</h2>
+                    <p>Odpowiedziałeś poprawnie na 5 pytań z rzędu!</p>
+                    <div class="powerup-reward">
+                        <p>Otrzymujesz ulepszacz:</p>
+                        <div id="received-powerup" class="powerup large-powerup">
+                            <span id="powerup-icon" class="powerup-icon"></span>
+                            <h3 id="powerup-name"></h3>
+                        </div>
+                        <p id="powerup-description"></p>
+                    </div>
+                    <button id="claim-powerup-btn" class="btn">Odbierz ulepszacz</button>
+                </div>
+
+                <div id="game-over-screen" class="screen">
+                    <h2>Gratulacje! Ukończyłeś wszystkie zestawy!</h2>
+                    <p>Dziękujemy za grę w Quiz o Popularnych Grach!</p>
+                    <div id="final-score-container">
+                        <h3>Twój końcowy wynik:</h3>
+                        <p id="final-score">0 punktów</p>
+                    </div>
+                    <button id="restart-btn" class="btn">Zagraj ponownie</button>
+                </div>
+                
+                <!-- Ekran upływu czasu -->
+                <div id="timeout-screen" class="screen">
+                    <h2>Czas minął!</h2>
+                    <p>Nie zdążyłeś odpowiedzieć na pytanie w wyznaczonym czasie.</p>
+                    <button id="timeout-next-btn" class="btn">Następne Pytanie</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="scoreboard">
+            <h2>Tabela Wyników</h2>
+            <div class="current-player">
+                <h3>Aktualny gracz: <span id="current-player-name">Nieznany</span></h3>
+                <div class="player-stats">
+                    <p>Zestaw: <span id="player-set">1</span></p>
+                    <p>Punkty: <span id="player-score">0</span></p>
+                    <p>Monety: <span id="player-coins">0</span>/10</p>
+                    <p>Poziom: <span id="difficulty-level">Łatwy</span></p>
+                    <p>Pozycja w rankingu: <span id="player-rank">-</span></p>
+                </div>
+            </div>
+            <div class="high-scores">
+                <h3>Najlepsze wyniki</h3>
+                <div class="score-tabs">
+                    <button id="all-time-tab" class="score-tab active">Wszystkie czasy</button>
+                    <button id="this-week-tab" class="score-tab">Ten tydzień</button>
+                </div>
+                <table id="high-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Miejsce</th>
+                            <th>Nazwa</th>
+                            <th>Punkty</th>
+                            <th>Poziom</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="high-scores-body">
+                        <!-- High scores will be generated here -->
+                    </tbody>
+                </table>
+                <div class="download-container">
+                    <button id="export-scores-btn" class="small-btn">Pobierz wyniki (JSON)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
