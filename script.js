@@ -2593,7 +2593,7 @@ function updateSpeedEffect(timeLeft) {
         // Dodanie efektu trzęsienia
         speedModeScreen.classList.add('shake-effect');
         
-        // Zmiana koloru tła gdy mało czasu
+        // Zmiana koloru tła gdy mało czasuy
         const container = document.querySelector('.speed-effect-container');
         if (container) {
             // Bardziej intensywny kolor tła
