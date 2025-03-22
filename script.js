@@ -2618,3 +2618,23 @@ function updateSpeedEffect(timeLeft) {
         }
     }
 }
+
+// Funkcja do czyszczenia rankingu
+function clearAllRankingData() {
+    // Usuwamy dane rankingowe z localStorage
+    localStorage.removeItem('quizHighScores');
+    localStorage.removeItem('dailyQuests');
+    localStorage.removeItem('dailyRewardClaimed');
+    localStorage.removeItem('lastQuestGeneration');
+    
+    // Resetujemy tablicę wyników
+    highScores = [];
+    
+    // Odświeżamy wyświetlanie tabeli wyników
+    updateHighScoresTable();
+    
+    console.log('Ranking został wyczyszczony.');
+}
+
+// Czyścimy ranking przy starcie aplikacji
+clearAllRankingData();
